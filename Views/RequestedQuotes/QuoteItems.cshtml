@@ -1,0 +1,145 @@
+﻿@model PagedList.IPagedList<BPOfficeSupplies.Models.QuoteItem>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@using BPOfficeSupplies.BusinessLogic
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    CustomerLogic logic = new CustomerLogic();
+    QuoteLogic qlogic = new QuoteLogic();
+    ItemLogic itemlogic = new ItemLogic();
+}
+
+<script>
+    function versionNumberValidator() {
+        var x = document.getElementById("version_number");
+        x.value = x.value.replace(/[^0-9\.]/g, "");
+    }
+</script>
+
+
+<div class="panel panel-info">
+    <h3 class="panel-heading panel-info">
+        Quote Items - @Model.Count() Items(s) : Ref - @ViewBag.QuoteNumber
+        @if (ViewBag.status == "Reviewed" || ViewBag.status == "Accepted")
+        {
+            <a href="~/RequestedQuotes/AllQuotes" class="btn btn-warning">Close</a>
+        }
+        else
+        {
+            <button type="button" onclick="OpenSenQuoteToCustomerModal()" class="btn btn-primary">Send To Client</button>
+            <a href="~/RequestedQuotes/AllQuotes" class="btn btn-warning">Cancel</a>
+        }
+
+    </h3>
+    <div class="panel-body">
+        @using (Html.BeginForm("QuoteItems", "RequestedQuotes", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @*<p style="text-align:center">
+                    @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "", @placeholder = "Search Items", @style = "width:200px" })
+                    <button style="margin-left:5px" type="submit" class="btn btn-primary">Search <i class="glyphicon glyphicon-search" style="color:limegreen"></i> </button>
+                    <a onclick="location.href = '/RequestedQuotes/QuoteItems'" style="margin-left:5px;" class="btn btn-primary">Clear Search <i class="glyphicon glyphicon-refresh" style="color:limegreen"></i> </a>
+                </p>*@
+            <table class="tale table-bordered table-striped" style="width:100%">
+                <tr>
+                    <th>Item Quoted</th>
+                    <th>Date Quoted</th>
+                    <th>Status</th>
+                    <th>Quantity Required</th>
+                    <th>Price (R)</th>
+                    <th>Total Price (R)</th>
+                    <th>Action</th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@itemlogic.GetItem(item.ItemId).Description</td>
+                        <td>@qlogic.GetQuoteByQuoteId(item.QuoteId).DateQuoted</td>
+                        <td>@qlogic.GetQuoteByQuoteId(item.QuoteId).RequestStatus</td>
+                        <td>@item.qty</td>
+                        <td>
+                            @item.ActualPrice
+                        </td>
+                        <td class="hidden">
+                            <input type="text" name="qid" value="@item.QuoteItemId" />
+                        </td>
+                        <td>@item.TotalPrice</td>
+                        <td>
+                            @if (ViewBag.status == "Reviewed" || ViewBag.status == "Accepted")
+                            {
+                                if (item.TotalPrice > 0)
+                                {
+                                    <span class="badge badge-success">Updated</span>
+                                }
+                            }
+                            else
+                            {
+                                <button type="button" onclick="OpenUpdateModal('@item.QuoteItemId')" class="btn btn-primary">Enter Price</button>
+                                if (item.TotalPrice > 0)
+                                {
+                                    <span class="badge badge-success">Updated</span>
+                                }
+                            }
+
+                        </td>
+                    </tr>
+                }
+            </table>
+            <span style="margin-top:5%">
+                @Model.Count Records(s) Found - Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+            </span>
+            <span style="margin-left:5%">
+                @Html.PagedListPager(Model, page => Url.Action("QuoteItems",
+                 new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+            </span>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="updateItemConfirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title text-center" id="exampleModalLabel">Send Quote</h2>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="updateqid" value="@ViewBag.id" hidden />
+                <p>Are you sure you want to send quote to customer?</p>
+                <p class="alert alert-warning">Please ensure prices are correct as customer would deciline if not.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="SenQuoteToCustomer()">Send Quote</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updatePriceModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title text-center" id="exampleModalLabel">Enter Item Price</h2>
+            </div>
+            <form action="~/RequestedQuotes/UpdateQuoteItem" method="post">
+                <div class="modal-body">
+                    <input type="text" name="id" id="updatepricetxt" hidden/>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Price (R)", htmlAttributes: new { @class = "control-label" })
+                                @Html.Editor("price", new { htmlAttributes = new { @class = "form-control", @required = "required" } })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

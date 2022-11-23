@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    @using BPOfficeSupplies.BusinessLogic
+    @{
+        WishListLogic logic = new WishListLogic();
+        QuoteLogic qlogic = new QuoteLogic();
+    }
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/ItemScript.js"></script>
+    <script src="~/Scripts/WishList.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>
+        /*.panel-info{
+            background-color:cadetblue;
+        }*/
+        td, th {
+            padding: 10px;
+        }
+
+        .sidenav {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            padding-top: 80px;
+        }
+
+            .sidenav a {
+                padding: 6px 8px 6px 16px;
+                text-decoration: none;
+                font-size: 20px;
+                color: White;
+                display: block;
+            }
+
+                .sidenav a:hover {
+                    color: #f1f1f1;
+                }
+
+        .main {
+            margin-left: 250px; /* Same as the width of the sidenav */
+            padding: 0px 10px;
+            margin-top: 2%;
+        }
+
+        @@media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+                .sidenav a {
+                    font-size: 18px;
+                }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("BP Office Suppliers - Customer", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="sidenav">
+            <a href="~/Manage/ChangePassword"><span class="glyphicon glyphicon-user"></span> Manage Profile</a>
+            <a href="~/Home/Customer"><span class="glyphicon glyphicon-list"></span> Catalogue</a>
+            @if (logic.GetWishList(User.Identity.Name).Count > 0)
+            {
+                <a href="~/WishList/MyWishList"><span class="glyphicon glyphicon-star"></span> Manage Wish List <span class="badge badge-danger" style="color:red">+1</span></a>
+            }
+            else
+            {
+                <a href="~/WishList/MyWishList"><span class="glyphicon glyphicon-star"></span> Manage Wish List <span class="badge badge-danger" id="wishlistcount" style="color:red">0</span></a>
+            }
+
+            @if (qlogic.HasUnfinishedQuotes(User.Identity.Name))
+            {
+                <a href="~/Customers/AllQuotes"><span class="glyphicon glyphicon-list-alt"></span> Manage Quotes <span class="badge badge-danger" style="color:red">+1</span></a>
+
+            }
+            else
+            {
+                <a href="~/Customers/AllQuotes"><span class="glyphicon glyphicon-list-alt"></span> Manage Quotes <span class="badge badge-danger" id="quotecount" style="color:red">0</span></a>
+            }
+        </div>
+
+        <div class="main">
+            @RenderBody()
+        </div>
+
+
+
+
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

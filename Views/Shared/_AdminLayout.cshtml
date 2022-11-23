@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/ItemScript.js"></script>
+    <script src="~/Scripts/WishList.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>
+        td,th {
+            padding:10px;
+        }
+        /*.panel-info{
+            background-color:cadetblue;
+        }*/
+
+        .sidenav {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            padding-top: 80px;
+        }
+
+            .sidenav a {
+                padding: 6px 8px 6px 16px;
+                text-decoration: none;
+                font-size: 20px;
+                color: White;
+                display: block;
+            }
+
+                .sidenav a:hover {
+                    color: #f1f1f1;
+                }
+
+        .main {
+            margin-left: 250px; /* Same as the width of the sidenav */
+            padding: 0px 10px;
+            margin-top: 2%;
+        }
+
+        @@media screen and (max-height: 450px) {
+            .sidenav {
+                padding-top: 15px;
+            }
+
+                .sidenav a {
+                    font-size: 18px;
+                }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("BP Office Suppliers - Admin", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="sidenav">
+            <a href="~/Manage/ChangePassword"><span class="glyphicon glyphicon-user"></span> Manage Profile</a>
+            <a href="~/Home/Admin"><span class="glyphicon glyphicon-list"></span> Items</a>
+            <a href="~/Categories/AllCategories"><span class="glyphicon glyphicon-list-alt"></span> Item Categories</a>
+            <a href="~/Customers/AllCustomers"><span class="glyphicon glyphicon-tags"></span> Customers</a>
+            <a href="~/RequestedQuotes/AllQuotes"><span class="glyphicon glyphicon-barcode"></span> Requested Quotes</a>
+        </div>
+
+        <div class="main">
+            @RenderBody()
+        </div>
+
+
+
+
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

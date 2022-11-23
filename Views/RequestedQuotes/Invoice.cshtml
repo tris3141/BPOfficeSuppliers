@@ -1,0 +1,122 @@
+﻿@model PagedList.IPagedList<BPOfficeSupplies.Models.QuoteItem>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@using BPOfficeSupplies.BusinessLogic
+@{
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+    CustomerLogic logic = new CustomerLogic();
+    QuoteLogic qlogic = new QuoteLogic();
+    ItemLogic itemlogic = new ItemLogic();
+}
+
+<script>
+    function versionNumberValidator() {
+        var x = document.getElementById("version_number");
+        x.value = x.value.replace(/[^0-9\.]/g, "");
+    }
+</script>
+
+
+<div class="panel panel-info">
+    <h3 class="panel-heading panel-info">
+        Quote Items - @Model.Count() Items(s) : Ref - @ViewBag.QuoteNumber
+        @if (ViewBag.status == "Sent" || ViewBag.status == "Accepted" || ViewBag.status == "Created")
+        {
+            <a href="~/Customers/AllQuotes" class="btn btn-warning">Close</a>
+        }
+        else if (ViewBag.status == "Reviewed")
+        {
+            <button type="button" onclick="OpenDecline()" class="btn btn-danger">Decline</button>
+            <button type="button" onclick="OpenAccept()" class="btn btn-success">Accept</button>
+            <a href="~/Customers/AllQuotes" class="btn btn-warning">Close</a>
+        }
+        else if (ViewBag.status == "Declined")
+        {
+            <button type="button" onclick="" class="btn btn-primary">Send To Admin</button>
+            <a href="~/Customers/AllQuotes" class="btn btn-warning">Close</a>
+        }
+
+    </h3>
+    <div class="panel-body">
+        @using (Html.BeginForm("QuoteItemsCustomer", "RequestedQuotes", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @*<p style="text-align:center">
+                    @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "", @placeholder = "Search Items", @style = "width:200px" })
+                    <button style="margin-left:5px" type="submit" class="btn btn-primary">Search <i class="glyphicon glyphicon-search" style="color:limegreen"></i> </button>
+                    <a onclick="location.href = '/RequestedQuotes/QuoteItems'" style="margin-left:5px;" class="btn btn-primary">Clear Search <i class="glyphicon glyphicon-refresh" style="color:limegreen"></i> </a>
+                </p>*@
+            <h3>Total for Quote: R @ViewBag.total</h3>
+            <table class="tale table-bordered table-striped" style="width:100%">
+                <tr>
+                    <th>Item Quoted</th>
+                    <th>Date Quoted</th>
+                    <th>Status</th>
+                    <th>Quantity Required</th>
+                    <th>Price (R)</th>
+                    <th>Total Price (R)</th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@itemlogic.GetItem(item.ItemId).Description</td>
+                        <td>@qlogic.GetQuoteByQuoteId(item.QuoteId).DateQuoted</td>
+                        <td>@qlogic.GetQuoteByQuoteId(item.QuoteId).RequestStatus</td>
+                        <td>@item.qty</td>
+                        <td>
+                            @item.ActualPrice
+                        </td>
+                        <td class="hidden">
+                            <input type="text" name="qid" value="@item.QuoteItemId" />
+                        </td>
+                        <td>@item.TotalPrice</td>
+                    </tr>
+                }
+            </table>
+            <span style="margin-top:5%">
+                @Model.Count Records(s) Found - Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+            </span>
+            <span style="margin-left:5%">
+                @Html.PagedListPager(Model, page => Url.Action("QuoteItemsCustomer",
+                 new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+            </span>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="acceptModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title text-center" id="exampleModalLabel">Accept Quote</h2>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="acceptid" value="@ViewBag.id" hidden />
+                <p>Are you sure you want to accept quote?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="AcceptQuote()">Accept Quote</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="declineModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title text-center" id="exampleModalLabel">Decline Quote</h2>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="declineid" value="@ViewBag.id" hidden />
+                <p>Are you sure you want to decline quote?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" onclick="DeclineQuote()">Decline Quote</button>
+            </div>
+        </div>
+    </div>
+</div>

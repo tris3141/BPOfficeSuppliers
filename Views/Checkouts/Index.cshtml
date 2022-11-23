@@ -1,0 +1,145 @@
+﻿@model BPOfficeSupplies.Models.Checkout
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Checkout</title>
+</head>
+<body>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <center><h1>Checkout</h1></center>
+            <hr />
+            <b>Please Note: We currently have 2 methods of payment: MasterCard and Visa.</b>
+            <br />
+            <h2>Payment Method</h2>
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                <p style="font-size:25px">
+                    @Html.LabelFor(model => model.Method, htmlAttributes: new { @class = "control-label col-md-2" }) @Html.DropDownList("Method", new List<SelectListItem>
+{
+                        new SelectListItem { Text = "MasterCard", Value = "MasterCard" },
+                        new SelectListItem { Text = "Visa", Value = "Visa" },
+})</p>
+
+            </div>
+
+            <div class="form-group">
+                <p style="font-size:25px">
+                    @Html.LabelFor(model => model.CardNo, htmlAttributes: new { @class = "control-label col-md-2" })  @Html.TextBoxFor(model => model.CardNo, new { style = "height:30px; width:400px", maxlength = "16", minlength = "16" }) @Html.ValidationMessageFor(model => model.CardNo, "", new { @class = "text-danger" })
+                </p>
+            </div>
+
+            <div class="form-group">
+                <p style="font-size:25px">
+                    @Html.LabelFor(model => model.ExpMonth, htmlAttributes: new { @class = "control-label col-md-2" }) @Html.DropDownList("ExpMonth", new List<SelectListItem>
+         {
+         new SelectListItem{ Text="01", Value = "01" },
+         new SelectListItem{ Text="02", Value = "02" },
+         new SelectListItem{ Text="03", Value = "03" },
+         new SelectListItem{ Text="04", Value = "04" },
+         new SelectListItem{ Text="05", Value = "05" },
+         new SelectListItem{ Text="06", Value = "06" },
+         new SelectListItem{ Text="07", Value = "07" },
+         new SelectListItem{ Text="08", Value = "08" },
+         new SelectListItem{ Text="09", Value = "09" },
+         new SelectListItem{ Text="10", Value = "10" },
+         new SelectListItem{ Text="11", Value = "11" },
+         new SelectListItem{ Text="12", Value = "12" },
+         }) |  @Html.DropDownList("ExpYear", new List<SelectListItem>
+{
+new SelectListItem{ Text="2021", Value = "2021" },
+new SelectListItem{ Text="2022", Value = "2022" },
+new SelectListItem{ Text="2023", Value = "2023" },
+new SelectListItem{ Text="2024", Value = "2024" },
+new SelectListItem{ Text="2025", Value = "2025" },
+new SelectListItem{ Text="2026", Value = "2026" },
+new SelectListItem{ Text="2027", Value = "2027" },
+new SelectListItem{ Text="2028", Value = "2028" },
+new SelectListItem{ Text="2029", Value = "2029" },
+new SelectListItem{ Text="2030", Value = "2030" },
+new SelectListItem{ Text="2031", Value = "2031" },
+new SelectListItem{ Text="2032", Value = "2032" },
+})</p>
+            </div>
+
+<div class="form-group">
+    <p style="font-size:25px">
+        @Html.LabelFor(model => model.SecCode, htmlAttributes: new { @class = "control-label col-md-2" })  @Html.TextBoxFor(model => model.SecCode, new { style = "height:30px; width:50px", maxlength = "3", minlength = "3" }) @Html.ValidationMessageFor(model => model.SecCode, "", new { @class = "text-danger" })
+    </p>
+</div>
+<p style="font-size:25px"><b>Delivery Details</b></p>
+<div class="form-group">
+    <p style="font-size:25px">
+@Html.LabelFor(model => model.Fname, htmlAttributes: new { @class = "control-label col-md-2" })  @Html.TextBoxFor(model => model.Fname, new { style = "height:30px; width:400px" }) @Html.ValidationMessageFor(model => model.Fname, "", new { @class = "text-danger" })
+    </p>
+</div>
+
+<div class="form-group">
+    <p style="font-size:25px">
+ @Html.LabelFor(model => model.Lname, htmlAttributes: new { @class = "control-label col-md-2" })  @Html.TextBoxFor(model => model.Lname, new { style = "height:30px; width:400px" }) @Html.ValidationMessageFor(model => model.Lname, "", new { @class = "text-danger" })
+    </p>
+</div>
+
+<div class="form-group">
+    <p style="font-size:25px">
+@Html.LabelFor(model => model.Address1, htmlAttributes: new { @class = "control-label col-md-2" })  @Html.TextBoxFor(model => model.Address1, new { style = "height:30px; width:400px" }) @Html.ValidationMessageFor(model => model.Address1, "", new { @class = "text-danger" })
+    </p>
+</div>
+
+<div class="form-group">
+    <p style="font-size:25px">
+        @Html.LabelFor(model => model.Address2, htmlAttributes: new { @class = "control-label col-md-2" })  @Html.TextBoxFor(model => model.Address2, new { style = "height:30px; width:400px" }) @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger" })
+    </p>
+</div>
+
+<div class="form-group">
+    <p style="font-size:25px">
+        @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-2" })  @Html.TextBoxFor(model => model.City, new { style = "height:30px; width:400px" }) @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+    </p>
+</div>
+
+<div class="form-group">
+    <p style="font-size:25px">
+        @Html.LabelFor(model => model.Province, htmlAttributes: new { @class = "control-label col-md-2" })  @Html.TextBoxFor(model => model.Province, new { style = "height:30px; width:400px" }) @Html.ValidationMessageFor(model => model.Province, "", new { @class = "text-danger" })
+    </p>
+</div>
+
+<div class="form-group">
+    <p style="font-size:25px">
+        @Html.LabelFor(model => model.Postal, htmlAttributes: new { @class = "control-label col-md-2" })  @Html.TextBoxFor(model => model.Postal, new { style = "height:30px; width:80px", maxlength = "4" , minlength = "4" }) @Html.ValidationMessageFor(model => model.Postal, "", new { @class = "text-danger" })
+    </p>
+</div>
+
+<div class="form-group">
+    <p style="font-size:25px">
+        @Html.LabelFor(model => model.ContactNo, htmlAttributes: new { @class = "control-label col-md-2" }) @Html.TextBoxFor(model => model.ContactNo, new { style = "height:30px; width:400px", maxlength = "10", minlength = "10" }) @Html.ValidationMessageFor(model => model.ContactNo, "", new { @class = "text-danger" })
+    </p>
+</div>
+
+<div class="form-group">
+    <div class="col-lg-offset-2 col-lg-10">
+        <input type="submit" value="Proceed" class="btn btn-success" onclick="/Views/Checkouts/Success.cshtml" />
+        <br />
+        @*<input type="submit" onClick="myFunction()" />
+            <script>
+                function myFunction() {
+                    window.location.href ="~/Views/Checkouts/Success.cshtml";
+                }
+            </script>*@
+    </div>
+</div>
+</div>
+}
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+﻿@model PagedList.IPagedList<BPOfficeSupplies.Models.Item>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@using BPOfficeSupplies.BusinessLogic
+@{
+    var result = TempData["AlertMessage"] ?? string.Empty;
+    CategoryLogic category = new CategoryLogic();
+}
+
+
+
+<div class="panel panel-info" style="margin-top:5%">
+        <h3 class="panel-heading panel-info">Browse Catalogue </h3>
+        @using (Html.BeginForm("Main", "Home", FormMethod.Get))
+        {
+            @Html.AntiForgeryToken()
+            <p style="text-align:center">
+                @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "", @placeholder = "Search Item", @style = "width:200px" })
+                <button style="margin-left:5px" type="submit" class="btn btn-primary">Search <i class="glyphicon glyphicon-search" style="color:limegreen"></i> </button>
+                <a onclick="location.href = '/Home/Main'" style="margin-left:5px;" class="btn btn-primary">Clear Search <i class="glyphicon glyphicon-refresh" style="color:limegreen"></i> </a>
+            </p>
+            <div class="panel-body">
+                <table class="tale table-bordered table-striped" style="width:100%">
+                    <tr>
+                        <th>Item</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Date Added</th>
+                        <th>Date Updated</th>
+                        <th>Action</th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td style="padding-left:50px"><img src="~/Content/ItemPictures/@item.ItemPicture" height="100" width="150" /></td>
+                            <td>@item.Description</td>
+                            <td>@category.GetCategory(item.CategoryId).CategoryName</td>
+                            <td>@item.DateAdded</td>
+                            <td>@item.DateUpdated</td>
+                            <td><a href="~/Account/Login" class="btn btn-primary btn-sm">Add To Wishlist <span class="fa fa-star"></span></a></td>
+                        </tr>
+                    }
+                </table>
+
+                <span style="margin-top:5%">
+                    @Model.Count Records(s) Found - Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                </span>
+                <span style="margin-left:5%">
+                    @Html.PagedListPager(Model, page => Url.Action("Main",
+                     new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+                </span>
+            </div>
+        }
+    </div>

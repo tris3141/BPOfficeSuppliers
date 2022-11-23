@@ -1,0 +1,100 @@
+﻿@model PagedList.IPagedList<BPOfficeSupplies.Models.RequestedQuote>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+@using BPOfficeSupplies.BusinessLogic
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    CustomerLogic logic = new CustomerLogic();
+
+}
+
+
+<div class="panel panel-info">
+    <h3 class="panel-heading panel-info">Quotes - @Model.Count() Quote(s)</h3>
+    <div class="panel-body">
+@using (Html.BeginForm("AllQuotes", "RequestedQuotes", FormMethod.Get))
+{
+    @Html.AntiForgeryToken()
+    <p style="text-align:center">
+        @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "", @placeholder = "Search Quotes", @style = "width:200px" })
+        <button style="margin-left:5px" type="submit" class="btn btn-primary">Search <i class="glyphicon glyphicon-search" style="color:limegreen"></i> </button>
+        <a onclick="location.href = '/RequestedQuotes/AllQuotes'" style="margin-left:5px;" class="btn btn-primary">Clear Search <i class="glyphicon glyphicon-refresh" style="color:limegreen"></i> </a>
+    </p>
+        <table class="tale table-bordered table-striped" style="width:100%">
+            <tr>
+                <th>Quote Number</th>
+                <th>Customer</th>
+                <th>Customer Number</th>
+                <th>Date Quoted</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.QuoteNumber</td>
+                    <td>@logic.GetCustomer(item.CustomerId).FirstName @logic.GetCustomer(item.CustomerId).Surname</td>
+                    <td>@logic.GetCustomer(item.CustomerId).CustomerNumber</td>
+                    <td>@item.DateQuoted</td>
+                    <td>
+                    @{ 
+                        if(item.RequestStatus=="Sent")
+                        {
+                            <span>Pending Review</span>
+                        }
+                        else
+                        {
+                            <span>@item.RequestStatus</span>
+                        }
+                    }
+                    
+                    </td>
+                    <td>
+                        @{ 
+                            if(item.RequestStatus=="Sent" || item.RequestStatus == "Declined")
+                            {
+                                <a href="~/RequestedQuotes/QuoteItems/@item.QuoteId" class="btn btn-primary" type="button">Review</a>
+                            }
+                            else
+                            {
+                                <a href="~/RequestedQuotes/QuoteItems/@item.QuoteId" class="btn btn-primary" type="button">View Items</a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+        <span style="margin-top:5%">
+            @Model.Count Records(s) Found - Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+        </span>
+        <span style="margin-left:5%">
+            @Html.PagedListPager(Model, page => Url.Action("AllQuotes",
+                 new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+        </span>
+}
+    </div>
+</div>
+
+<div class="modal fade" id="updateItems" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Category</h5>
+            </div>
+            <div class="modal-body">
+                <form action="~/Categories/UpdateCategory" method="post" id="SubmitUpdateCategoryForm">
+                    <input type="text" name="id" id="UpdateCategoryId" hidden />
+                   <table id="myItemslist">
+
+                   </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="UpdateCategory()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
